@@ -1,8 +1,8 @@
-FROM dockerhub.azk8s.cn/library/php:7.3.16-cli
+FROM dockerhub.azk8s.cn/library/php:7.3.17-cli
 
 LABEL product=auth-swoole-server
 
-ENV PHPREDIS_VER=5.2.1 SWOOLE_VER=4.4.17
+ENV PHPREDIS_VER=5.2.1 SWOOLE_VER=4.4.18
 
 ARG CN="0"
 ARG INTRANET="0"
