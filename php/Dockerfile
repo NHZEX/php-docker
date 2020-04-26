@@ -1,4 +1,4 @@
-FROM docker.mirrors.ustc.edu.cn/library/php:7.3.17-cli
+FROM hub-mirror.c.163.com/library/php:7.3.17-cli
 
 LABEL product=auth-swoole-server
 
