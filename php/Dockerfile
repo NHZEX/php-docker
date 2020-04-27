@@ -10,6 +10,7 @@ ARG INTRANET="0"
 # install modules
 RUN set -eux \
     && ([ "${CN}" = "0" ] || sed -i "s@http://deb.debian.org@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list) \
+    && ([ "${CN}" = "0" ] || sed -i "s|security.debian.org/debian-security|mirrors.tuna.tsinghua.edu.cn/debian-security|g" /etc/apt/sources.list) \
     && apt update \
     && apt install -y wget git libssl-dev libzip-dev \
 # install php modules
