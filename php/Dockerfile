@@ -1,8 +1,8 @@
-FROM hub-mirror.c.163.com/library/php:7.3.17-cli
+FROM hub-mirror.c.163.com/library/php:7.3.19-cli
 
 LABEL product=auth-swoole-server
 
-ENV PHPREDIS_VER=5.2.1 SWOOLE_VER=4.4.18
+ENV PHPREDIS_VER=5.2.2 SWOOLE_VER=4.5.2
 
 ARG CN="0"
 ARG INTRANET="0"
@@ -48,8 +48,10 @@ RUN set -eux \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
-# set China timezone
 RUN set -eux \
+# set china timezone
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone
+    && echo "Asia/Shanghai" > /etc/timezone \
+# php config
+    && mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
