@@ -1,8 +1,8 @@
-FROM hub-mirror.c.163.com/library/php:7.3.19-cli
+FROM php:7.4.15-cli
 
 LABEL product=auth-swoole-server
 
-ENV PHPREDIS_VER=5.2.2 SWOOLE_VER=4.5.2
+ENV PHPREDIS_VER=5.3.3 SWOOLE_VER=4.5.11
 
 ARG CN="0"
 ARG INTRANET="0"
