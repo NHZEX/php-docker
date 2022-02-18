@@ -1,0 +1,102 @@
+FROM php:8.0-cli-bullseye
+
+LABEL product=php-swoole
+
+ENV PHPREDIS_VER=5.3.6
+ENV SWOOLE_VER=4.8.6
+
+ARG CN="0"
+ARG INTRANET="0"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN set -eux \
+    && ([ "${CN}" = "0" ] || sed -i "s@http://deb.debian.org@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list) \
+    && ([ "${CN}" = "0" ] || sed -i "s|security.debian.org/debian-security|mirrors.tuna.tsinghua.edu.cn/debian-security|g" /etc/apt/sources.list)
+
+# issue https://github.com/php/php-src/issues/7986
+RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets
+
+# install
+RUN set -eux \
+    && apt update \
+    && apt install --no-install-recommends -y \
+     ca-certificates \
+     libssl-dev \
+     libzip-dev zlib1g-dev \
+     libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev libxpm-dev \
+     libc-client-dev libkrb5-dev \
+     libicu-dev \
+     libcurl4-openssl-dev \
+     libc-ares-dev \
+# install php modules
+    && docker-php-source extract \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
+    && docker-php-ext-install -j$(nproc) \
+     bcmath \
+     exif \
+     gd \
+     imap \
+     intl \
+     pcntl \
+     zip \
+     pdo_mysql \
+# compile php modules
+    && cd /usr/src/php/ext \
+# install php redie
+    && (if [ "${INTRANET}" = "0" ]; then \
+        pecl install redis-${PHPREDIS_VER} \
+        ; \
+    else \
+        wget -P /tmp ${INTRANET}/redis-${PHPREDIS_VER}.tgz  \
+        && pecl install /tmp/redis-${PHPREDIS_VER}.tgz \
+        ; \
+    fi) \
+    && docker-php-ext-enable redis \
+# install php swoole
+    && (if [ "${INTRANET}" = "0" ]; then \
+        pecl bundle swoole-${SWOOLE_VER} \
+        ; \
+    else \
+        wget -P /tmp ${INTRANET}/swoole-${SWOOLE_VER}.tgz  \
+        && pecl bundle /tmp/swoole-${SWOOLE_VER}.tgz \
+        ; \
+    fi) \
+    && docker-php-ext-configure swoole \
+      --enable-http2 \
+      --enable-sockets \
+      --enable-openssl \
+      --enable-mysqlnd \
+      --enable-sockets \
+      --enable-swoole-json \
+      --enable-swoole-curl \
+      --enable-cares \
+    && docker-php-ext-install -j$(nproc) swoole \
+# opcache \
+    && echo "zend_extension=opcache.so" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && ( \
+        [ "${PHP_JIT_ON}" = "0" ] \
+        || ( \
+            && echo "opcache.jit_buffer_size=64M" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+            && echo ">> enable opcache" \
+        ) \
+    ) \
+# check
+    && php -v \
+    && php -m \
+    && php --ri swoole \
+# clear up
+    && docker-php-source delete \
+#    && apt-get --purge remove -y wget \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN set -eux \
+# set china timezone
+    && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+# php config
+    && mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
+
