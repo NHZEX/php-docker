@@ -1,4 +1,4 @@
-FROM php:8.0-cli-bullseye
+FROM php:8.0.16-cli-bullseye
 
 LABEL product=php-swoole
 
@@ -15,7 +15,7 @@ RUN set -eux \
     && ([ "${CN}" = "0" ] || sed -i "s|security.debian.org/debian-security|ftp.cn.debian.org/debian-security|g" /etc/apt/sources.list)
 
 # issue https://github.com/php/php-src/issues/7986
-RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets
+# RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets
 
 # install
 RUN set -eux \
@@ -36,6 +36,7 @@ RUN set -eux \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-install -j$(nproc) \
      bcmath \
+     sockets \
      exif \
      gd \
      imap \
