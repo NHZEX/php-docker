@@ -11,8 +11,8 @@ ARG INTRANET="0"
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux \
-    && ([ "${CN}" = "0" ] || sed -i "s@http://deb.debian.org@http://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list) \
-    && ([ "${CN}" = "0" ] || sed -i "s|security.debian.org/debian-security|mirrors.tuna.tsinghua.edu.cn/debian-security|g" /etc/apt/sources.list)
+    && ([ "${CN}" = "0" ] || sed -i "s@http://deb.debian.org@http://ftp.cn.debian.org@g" /etc/apt/sources.list) \
+    && ([ "${CN}" = "0" ] || sed -i "s|security.debian.org/debian-security|ftp.cn.debian.org/debian-security|g" /etc/apt/sources.list)
 
 # issue https://github.com/php/php-src/issues/7986
 RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets
@@ -27,6 +27,7 @@ RUN set -eux \
      libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev libxpm-dev \
      libc-client-dev libkrb5-dev \
      libicu-dev \
+     libmagickwand-dev \
      libcurl4-openssl-dev \
      libc-ares-dev \
 # install php modules
@@ -41,6 +42,7 @@ RUN set -eux \
      intl \
      pcntl \
      zip \
+     pdo \
      pdo_mysql \
 # compile php modules
     && cd /usr/src/php/ext \
@@ -54,6 +56,8 @@ RUN set -eux \
         ; \
     fi) \
     && docker-php-ext-enable redis \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick \
 # install php swoole
     && (if [ "${INTRANET}" = "0" ]; then \
         pecl bundle swoole-${SWOOLE_VER} \
@@ -76,13 +80,6 @@ RUN set -eux \
 # opcache \
     && echo "zend_extension=opcache.so" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
-    && ( \
-        [ "${PHP_JIT_ON}" = "0" ] \
-        || ( \
-            && echo "opcache.jit_buffer_size=64M" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
-            && echo ">> enable opcache" \
-        ) \
-    ) \
 # check
     && php -v \
     && php -m \
