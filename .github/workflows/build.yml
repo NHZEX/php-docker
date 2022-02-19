@@ -14,10 +14,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/NHZEX/php
           tags: |
             type=ref,event=branch
-            type=raw,cli-8.0-swoole
+            type=raw,8.0.16-cli-swoole
       - name: Log in to Github
         uses: docker/login-action@v1
         with:
