@@ -3,7 +3,7 @@ FROM php:8.0.16-cli-bullseye
 LABEL product=php-swoole
 
 ENV PHPREDIS_VER=5.3.6
-ENV SWOOLE_VER=4.8.6
+ENV SWOOLE_VER=4.8.7
 
 ARG CN="0"
 ARG INTRANET="0"
