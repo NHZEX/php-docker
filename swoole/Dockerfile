@@ -1,9 +1,9 @@
-FROM php:8.0.16-cli-bullseye
+FROM php:8.0.20-cli-bullseye
 
 LABEL product=php-swoole
 
-ENV PHPREDIS_VER=5.3.6
-ENV SWOOLE_VER=4.8.7
+ENV PHPREDIS_VER=5.3.7
+ENV SWOOLE_VER=4.8.10
 
 ARG CN="0"
 ARG INTRANET="0"
@@ -84,6 +84,7 @@ RUN set -eux \
 # check
     && php -v \
     && php -m \
+    && php --ri curl \
     && php --ri swoole \
 # clear up
     && docker-php-source delete \
