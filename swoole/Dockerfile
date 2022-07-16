@@ -1,9 +1,9 @@
-FROM php:8.0.20-cli-bullseye
+FROM php:8.0.21-cli-bullseye
 
 LABEL product=php-swoole
 
 ENV PHPREDIS_VER=5.3.7
-ENV SWOOLE_VER=4.8.10
+ENV SWOOLE_VER=4.8.11
 
 ARG CN="0"
 ARG INTRANET="0"
