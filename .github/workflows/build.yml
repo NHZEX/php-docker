@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       POSTGRESQL_VER: f5eda17f89d160d0a89ac7c5db4636bdaefd48e6
+      IMAGE_TAG: 8.0.22-cli-swoole
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -17,7 +18,7 @@ jobs:
           images: ghcr.io/NHZEX/php
           tags: |
             type=ref,event=branch
-            type=raw,8.0.21-cli-swoole
+            type=raw,${{ env.IMAGE_TAG }}
       - name: Log in to Github
         uses: docker/login-action@v1
         with:
