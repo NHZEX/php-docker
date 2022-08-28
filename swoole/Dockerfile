@@ -1,9 +1,10 @@
-FROM php:8.0.21-cli-bullseye
+FROM php:8.0.22-cli-bullseye
 
 LABEL product=php-swoole
 
 ENV PHPREDIS_VER=5.3.7
 ENV SWOOLE_VER=4.8.11
+ENV XLSWRITER_VER=1.5.2
 
 ARG CN="0"
 ARG INTRANET="0"
@@ -57,8 +58,21 @@ RUN set -eux \
         ; \
     fi) \
     && docker-php-ext-enable redis \
+# install imagick
     && pecl install imagick \
     && docker-php-ext-enable imagick \
+# install xlswriter \
+    && (if [ "${INTRANET}" = "0" ]; then \
+        pecl bundle xlswriter-${XLSWRITER_VER} \
+        ; \
+    else \
+        wget -P /tmp ${INTRANET}/xlswriter-${XLSWRITER_VER}.tgz  \
+        && pecl bundle /tmp/xlswriter-${XLSWRITER_VER}.tgz \
+        ; \
+    fi) \
+    && docker-php-ext-configure xlswriter --enable-reader \
+    && docker-php-ext-install -j$(nproc) xlswriter \
+    && docker-php-ext-enable xlswriter \
 # install php swoole
     && (if [ "${INTRANET}" = "0" ]; then \
         pecl bundle swoole-${SWOOLE_VER} \
@@ -81,16 +95,20 @@ RUN set -eux \
 # opcache \
     && echo "zend_extension=opcache.so" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
-# check
-    && php -v \
-    && php -m \
-    && php --ri curl \
-    && php --ri swoole \
 # clear up
     && docker-php-source delete \
 #    && apt-get --purge remove -y wget \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN set -eux \
+# check
+    && php -v \
+    && php -m \
+    && php --ri curl \
+    && php --ri redis \
+    && php --ri xlswriter \
+    && php --ri swoole
 
 RUN set -eux \
 # set china timezone
