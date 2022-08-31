@@ -13,7 +13,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -eux \
     && ([ "${CN}" = "0" ] || sed -i "s@http://deb.debian.org@http://ftp.cn.debian.org@g" /etc/apt/sources.list) \
-    && ([ "${CN}" = "0" ] || sed -i "s|security.debian.org/debian-security|ftp.cn.debian.org/debian-security|g" /etc/apt/sources.list)
+    && ([ "${CN}" = "0" ] || sed -i "s@security.debian.org/debian-security@ftp.cn.debian.org/debian-security@g" /etc/apt/sources.list)
 
 # issue https://github.com/php/php-src/issues/7986
 # RUN CFLAGS="$CFLAGS -D_GNU_SOURCE" docker-php-ext-install sockets
@@ -33,7 +33,7 @@ RUN set -eux \
      libc-ares-dev \
 # install php modules
     && docker-php-source extract \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-install -j$(nproc) \
      bcmath \
