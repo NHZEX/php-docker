@@ -1,9 +1,9 @@
-FROM php:8.0.22-cli-bullseye
+FROM php:8.0.27-cli-bullseye
 
 LABEL product=php-swoole
 
 ENV PHPREDIS_VER=5.3.7
-ENV SWOOLE_VER=4.8.11
+ENV SWOOLE_VER=4.8.12
 ENV XLSWRITER_VER=1.5.2
 
 ARG CN="0"
@@ -31,6 +31,7 @@ RUN set -eux \
      libmagickwand-dev \
      libcurl4-openssl-dev \
      libc-ares-dev \
+     imagemagick \
 # install php modules
     && docker-php-source extract \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -108,7 +109,10 @@ RUN set -eux \
     && php --ri curl \
     && php --ri redis \
     && php --ri xlswriter \
-    && php --ri swoole
+    && php --ri swoole \
+    && php --ri imagick \
+    # for IM 6
+    && convert -version
 
 RUN set -eux \
 # set china timezone
@@ -119,4 +123,4 @@ RUN set -eux \
 
 RUN curl -sfL https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
     && chmod +x /usr/bin/composer \
-    && composer -v
+    && composer --verbose
