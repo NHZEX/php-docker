@@ -1,4 +1,4 @@
-FROM php:8.0.27-cli-bullseye
+FROM php:8.0.28-cli-bullseye
 
 LABEL product=php-swoole
 
@@ -34,6 +34,7 @@ RUN set -eux \
      libcurl4-openssl-dev \
      libc-ares-dev \
      imagemagick \
+     libvips42 \
 # install php modules
     && docker-php-source extract \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -49,6 +50,7 @@ RUN set -eux \
      zip \
      pdo \
      pdo_mysql \
+     ffi \
 # compile php modules
     && cd /usr/src/php/ext \
 # install php redie
