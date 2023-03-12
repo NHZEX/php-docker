@@ -5,9 +5,12 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        image:
+          - {tag: 8.0.28-cli-swoole4-im6, file: swoole/8.0-swoole-4.x.Dockerfile}
+          - {tag: 8.1.16-cli-swoole4-im6, file: swoole/8.1-swoole-4.x.Dockerfile}
     env:
-      POSTGRESQL_VER: f5eda17f89d160d0a89ac7c5db4636bdaefd48e6
-      IMAGE_TAG: 8.0.27-cli-swoole-im6
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -18,7 +21,7 @@ jobs:
           images: ghcr.io/NHZEX/php
           tags: |
             type=ref,event=branch
-            type=raw,${{ env.IMAGE_TAG }}
+            type=raw,${{ matrix.image.tag }}
       - name: Log in to Github
         uses: docker/login-action@v2
         with:
@@ -29,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: swoole/Dockerfile
+          file: ${{ matrix.image.file }}
           build-args: |
             CN=0
           platforms: linux/amd64
