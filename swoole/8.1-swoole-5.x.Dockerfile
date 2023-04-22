@@ -85,12 +85,10 @@ RUN set -eux \
         ; \
     fi) \
     && docker-php-ext-configure swoole \
-      --enable-http2 \
       --enable-sockets \
       --enable-openssl \
       --enable-mysqlnd \
       --enable-sockets \
-      --enable-swoole-json \
       --enable-swoole-curl \
       --enable-cares \
     && docker-php-ext-install -j$(nproc) swoole \
