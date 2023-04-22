@@ -9,7 +9,8 @@ jobs:
       matrix:
         image:
           - {tag: 8.0.28-cli-swoole4-im6, file: swoole/8.0-swoole-4.x.Dockerfile}
-          - {tag: 8.1.16-cli-swoole4-im6, file: swoole/8.1-swoole-4.x.Dockerfile}
+          - {tag: 8.1.18-cli-swoole4-im6, file: swoole/8.1-swoole-4.x.Dockerfile}
+          - {tag: 8.1.18-cli-swoole5-im6, file: swoole/8.1-swoole-5.x.Dockerfile}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,9 +18,16 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/NHZEX/php
+          images: |
+            nhzex/php
+            ghcr.io/NHZEX/php
           tags: |
             type=raw,${{ matrix.image.tag }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Log in to Github
         uses: docker/login-action@v2
         with:
