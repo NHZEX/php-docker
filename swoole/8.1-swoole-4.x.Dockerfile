@@ -44,7 +44,6 @@ RUN set -eux \
      exif \
      gd \
      imap \
-     igbinary \
      intl \
      pcntl \
      zip \
@@ -52,6 +51,9 @@ RUN set -eux \
      pdo_mysql \
 # compile php modules
     && cd /usr/src/php/ext \
+# install igbinary
+    && pecl install igbinary \
+    && docker-php-ext-enable igbinary \
 # install php redie
     && (if [ "${INTRANET}" = "0" ]; then \
         pecl install redis-${PHPREDIS_VER} \
