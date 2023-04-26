@@ -9,6 +9,7 @@ jobs:
       matrix:
         image:
           - {tag: 8.0.28-cli-swoole4-im6, file: swoole/8.0-swoole-4.x.Dockerfile}
+          - {tag: 8.0.28-cli-swoole5-im6, file: swoole/8.0-swoole-5.x.Dockerfile}
           - {tag: 8.1.18-cli-swoole4-im6, file: swoole/8.1-swoole-4.x.Dockerfile}
           - {tag: 8.1.18-cli-swoole5-im6, file: swoole/8.1-swoole-5.x.Dockerfile}
     steps:

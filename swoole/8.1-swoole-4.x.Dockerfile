@@ -4,7 +4,7 @@ LABEL product=php-swoole
 
 ENV PHPREDIS_VER=5.3.7
 ENV SWOOLE_VER=4.8.13
-ENV XLSWRITER_VER=1.5.2
+ENV XLSWRITER_VER=1.5.4
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
@@ -39,10 +39,12 @@ RUN set -eux \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-install -j$(nproc) \
      bcmath \
+     bz2 \
      sockets \
      exif \
      gd \
      imap \
+     igbinary \
      intl \
      pcntl \
      zip \
