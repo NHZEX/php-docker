@@ -1,0 +1,23 @@
+version: '2'
+services:
+  redis:
+    image: bitnami/redis:7.2
+    volumes:
+      - ./tests/tls:/opt/bitnami/redis/certs
+    environment:
+      REDIS_PORT_NUMBER: 6379
+      REDIS_PASSWORD: "l83aa26"
+      REDIS_TLS_ENABLED: true
+      REDIS_TLS_PORT_NUMBER: 6443
+      REDIS_TLS_CERT_FILE: "/opt/bitnami/redis/certs/redis.crt"
+      REDIS_TLS_KEY_FILE: "/opt/bitnami/redis/certs/redis.key"
+      REDIS_TLS_CA_FILE: "/opt/bitnami/redis/certs/ca.crt"
+      REDIS_TLS_DH_PARAMS_FILE: "/opt/bitnami/redis/certs/redis.dh"
+      REDIS_TLS_AUTH_CLIENTS: "yes"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p $${REDIS_PORT_NUMBER} -a $${REDIS_PASSWORD} INFO | grep 'redis_version'"]
+      interval: 3s
+      timeout: 60s
+      retries: 30
+    ports:
+      - "6443:6443"

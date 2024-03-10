@@ -1,0 +1,83 @@
+version: '2'
+services:
+  redis-node-0:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-0:/bitnami/redis/data
+    depends_on:
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+      - redis-node-4
+      - redis-node-5
+    environment:
+      - 'REDIS_PASSWORD=l83aa26'
+      - 'REDISCLI_AUTH=l83aa26'
+      - 'REDIS_CLUSTER_REPLICAS=1'
+      - 'REDIS_CLUSTER_CREATOR=yes'
+      - 'REDIS_NODES=redis-node-0:6379 redis-node-1:6379 redis-node-2:6379 redis-node-3:6379 redis-node-4:6379 redis-node-5:6379'
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p $${REDIS_PORT_NUMBER:-6379} -a $${REDIS_PASSWORD} CLUSTER INFO | grep 'cluster_state:ok'"]
+      interval: 3s
+      timeout: 60s
+      retries: 30
+
+  redis-node-1:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-1:/bitnami/redis/data
+    environment:
+      - 'REDIS_PASSWORD=l83aa26'
+      - 'REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5'
+
+  redis-node-2:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-2:/bitnami/redis/data
+    environment:
+      - 'REDIS_PASSWORD=l83aa26'
+      - 'REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5'
+
+  redis-node-3:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-3:/bitnami/redis/data
+    environment:
+      - 'REDIS_PASSWORD=l83aa26'
+      - 'REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5'
+
+  redis-node-4:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-4:/bitnami/redis/data
+    environment:
+      - 'REDIS_PASSWORD=l83aa26'
+      - 'REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5'
+
+  redis-node-5:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-5:/bitnami/redis/data
+    environment:
+      - 'REDIS_PASSWORD=l83aa26'
+      - 'REDIS_NODES=redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5'
+
+volumes:
+  redis-cluster_data-0:
+    driver: local
+  redis-cluster_data-1:
+    driver: local
+  redis-cluster_data-2:
+    driver: local
+  redis-cluster_data-3:
+    driver: local
+  redis-cluster_data-4:
+    driver: local
+  redis-cluster_data-5:
+    driver: local
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

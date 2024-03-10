@@ -1,0 +1,131 @@
+version: '2'
+services:
+  redis-node-0:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-0:/bitnami/redis/data
+      - ./tests/tls:/opt/bitnami/redis/certs
+    depends_on:
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+      - redis-node-4
+      - redis-node-5
+    environment:
+      REDIS_PASSWORD: "l83aa26"
+      REDISCLI_AUTH: "l83aa26"
+      REDIS_CLUSTER_REPLICAS: 1
+      REDIS_CLUSTER_CREATOR: "yes"
+      REDIS_NODES: "redis-node-0:6379 redis-node-1:6379 redis-node-2:6379 redis-node-3:6379 redis-node-4:6379 redis-node-5:6379"
+      REDIS_TLS_ENABLED: true
+      REDIS_TLS_PORT_NUMBER: 6379
+      REDIS_TLS_CERT_FILE: "/opt/bitnami/redis/certs/redis.crt"
+      REDIS_TLS_KEY_FILE: "/opt/bitnami/redis/certs/redis.key"
+      REDIS_TLS_CA_FILE: "/opt/bitnami/redis/certs/ca.crt"
+      REDIS_TLS_DH_PARAMS_FILE: "/opt/bitnami/redis/certs/redis.dh"
+      REDIS_TLS_AUTH_CLIENTS: "yes"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h 127.0.0.1 -p $${REDIS_PORT_NUMBER:-6379} -a $${REDIS_PASSWORD} --tls --cacert $${REDIS_TLS_CA_FILE} --cert $${REDIS_TLS_CERT_FILE} --key $${REDIS_TLS_KEY_FILE} CLUSTER INFO | grep 'cluster_state:ok'"]
+      interval: 3s
+      timeout: 60s
+      retries: 30
+
+  redis-node-1:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-1:/bitnami/redis/data
+      - ./tests/tls:/opt/bitnami/redis/certs
+    environment:
+      REDIS_PASSWORD: "l83aa26"
+      REDIS_NODES: "redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5"
+      REDIS_TLS_ENABLED: true
+      REDIS_TLS_PORT_NUMBER: 6379
+      REDIS_TLS_CERT_FILE: "/opt/bitnami/redis/certs/redis.crt"
+      REDIS_TLS_KEY_FILE: "/opt/bitnami/redis/certs/redis.key"
+      REDIS_TLS_CA_FILE: "/opt/bitnami/redis/certs/ca.crt"
+      REDIS_TLS_DH_PARAMS_FILE: "/opt/bitnami/redis/certs/redis.dh"
+      REDIS_TLS_AUTH_CLIENTS: "yes"
+
+  redis-node-2:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-2:/bitnami/redis/data
+      - ./tests/tls:/opt/bitnami/redis/certs
+    environment:
+      REDIS_PASSWORD: "l83aa26"
+      REDIS_NODES: "redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5"
+      REDIS_TLS_ENABLED: true
+      REDIS_TLS_PORT_NUMBER: 6379
+      REDIS_TLS_CERT_FILE: "/opt/bitnami/redis/certs/redis.crt"
+      REDIS_TLS_KEY_FILE: "/opt/bitnami/redis/certs/redis.key"
+      REDIS_TLS_CA_FILE: "/opt/bitnami/redis/certs/ca.crt"
+      REDIS_TLS_DH_PARAMS_FILE: "/opt/bitnami/redis/certs/redis.dh"
+      REDIS_TLS_AUTH_CLIENTS: "yes"
+
+  redis-node-3:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-3:/bitnami/redis/data
+      - ./tests/tls:/opt/bitnami/redis/certs
+    environment:
+      REDIS_PASSWORD: "l83aa26"
+      REDIS_NODES: "redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5"
+      REDIS_TLS_ENABLED: true
+      REDIS_TLS_PORT_NUMBER: 6379
+      REDIS_TLS_CERT_FILE: "/opt/bitnami/redis/certs/redis.crt"
+      REDIS_TLS_KEY_FILE: "/opt/bitnami/redis/certs/redis.key"
+      REDIS_TLS_CA_FILE: "/opt/bitnami/redis/certs/ca.crt"
+      REDIS_TLS_DH_PARAMS_FILE: "/opt/bitnami/redis/certs/redis.dh"
+      REDIS_TLS_AUTH_CLIENTS: "yes"
+
+  redis-node-4:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-4:/bitnami/redis/data
+      - ./tests/tls:/opt/bitnami/redis/certs
+    environment:
+      REDIS_PASSWORD: "l83aa26"
+      REDIS_NODES: "redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5"
+      REDIS_TLS_ENABLED: true
+      REDIS_TLS_PORT_NUMBER: 6379
+      REDIS_TLS_CERT_FILE: "/opt/bitnami/redis/certs/redis.crt"
+      REDIS_TLS_KEY_FILE: "/opt/bitnami/redis/certs/redis.key"
+      REDIS_TLS_CA_FILE: "/opt/bitnami/redis/certs/ca.crt"
+      REDIS_TLS_DH_PARAMS_FILE: "/opt/bitnami/redis/certs/redis.dh"
+      REDIS_TLS_AUTH_CLIENTS: "yes"
+
+  redis-node-5:
+    image: bitnami/redis-cluster:7.2
+    volumes:
+      - redis-cluster_data-5:/bitnami/redis/data
+      - ./tests/tls:/opt/bitnami/redis/certs
+    environment:
+      REDIS_PASSWORD: "l83aa26"
+      REDIS_NODES: "redis-node-0 redis-node-1 redis-node-2 redis-node-3 redis-node-4 redis-node-5"
+      REDIS_TLS_ENABLED: true
+      REDIS_TLS_PORT_NUMBER: 6379
+      REDIS_TLS_CERT_FILE: "/opt/bitnami/redis/certs/redis.crt"
+      REDIS_TLS_KEY_FILE: "/opt/bitnami/redis/certs/redis.key"
+      REDIS_TLS_CA_FILE: "/opt/bitnami/redis/certs/ca.crt"
+      REDIS_TLS_DH_PARAMS_FILE: "/opt/bitnami/redis/certs/redis.dh"
+      REDIS_TLS_AUTH_CLIENTS: "yes"
+
+volumes:
+  redis-cluster_data-0:
+    driver: local
+  redis-cluster_data-1:
+    driver: local
+  redis-cluster_data-2:
+    driver: local
+  redis-cluster_data-3:
+    driver: local
+  redis-cluster_data-4:
+    driver: local
+  redis-cluster_data-5:
+    driver: local
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
