@@ -1,0 +1,134 @@
+version: "3.5"
+
+services:
+  redis:
+    image: 'bitnami/redis:7.2'
+    environment:
+      REDIS_REPLICATION_MODE: master
+      REDIS_PASSWORD: "l83aa26"
+    networks:
+      proxies:
+        aliases:
+          - redis-master
+        ipv4_address: 172.10.12.25
+  redis-slave1:
+    image: 'bitnami/redis:7.2'
+    environment:
+      REDIS_REPLICATION_MODE: slave
+      REDIS_MASTER_HOST: "172.10.12.25"
+      REDIS_MASTER_PASSWORD: "l83aa26"
+      REDIS_PASSWORD: "l83aa26"
+    depends_on:
+      - redis
+    networks:
+      proxies:
+        aliases:
+          - redis-slave-1
+        ipv4_address: 172.10.12.26
+  redis-slave2:
+    image: 'bitnami/redis:7.2'
+    environment:
+      REDIS_REPLICATION_MODE: slave
+      REDIS_MASTER_HOST: "172.10.12.25"
+      REDIS_MASTER_PASSWORD: "l83aa26"
+      REDIS_PASSWORD: "l83aa26"
+    depends_on:
+      - redis
+    networks:
+      proxies:
+        aliases:
+          - redis-slave-2
+        ipv4_address: 172.10.12.27
+  redis-slave3:
+    image: 'bitnami/redis:7.2'
+    environment:
+      REDIS_REPLICATION_MODE: slave
+      REDIS_MASTER_HOST: "172.10.12.25"
+      REDIS_MASTER_PASSWORD: "l83aa26"
+      REDIS_PASSWORD: "l83aa26"
+    depends_on:
+      - redis
+    networks:
+      proxies:
+        aliases:
+          - redis-slave-3
+        ipv4_address: 172.10.12.28
+  redis-sentinel-1:
+    image: 'bitnami/redis-sentinel:7.2'
+    environment:
+      REDIS_MASTER_PASSWORD: "l83aa26"
+      REDIS_MASTER_HOST: "172.10.12.25"
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_SET: mymaster
+      REDIS_SENTINEL_PORT_NUMBER: 26379
+      REDIS_SENTINEL_QUORUM: 2
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 3000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 180000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: "no"
+    deploy:
+      replicas: 1
+    depends_on:
+      - redis
+      - redis-slave1
+      - redis-slave2
+      - redis-slave3
+    networks:
+      proxies:
+        aliases:
+          - redis-sentinel-1
+        ipv4_address: 172.10.12.20
+  redis-sentinel-2:
+    image: 'bitnami/redis-sentinel:7.2'
+    environment:
+      REDIS_MASTER_PASSWORD: "l83aa26"
+      REDIS_MASTER_HOST: "172.10.12.25"
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_SET: mymaster
+      REDIS_SENTINEL_PORT_NUMBER: 26379
+      REDIS_SENTINEL_QUORUM: 2
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 3000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 180000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: "yes"
+      REDIS_SENTINEL_ANNOUNCE_HOSTNAMES: "yes"
+    deploy:
+      replicas: 1
+    depends_on:
+      - redis
+      - redis-slave1
+      - redis-slave2
+      - redis-slave3
+    networks:
+      proxies:
+        aliases:
+          - redis-sentinel-2
+        ipv4_address: 172.10.12.21
+  redis-sentinel-3:
+    image: 'bitnami/redis-sentinel:7.2'
+    environment:
+      REDIS_MASTER_PASSWORD: "l83aa26"
+      REDIS_MASTER_HOST: "172.10.12.25"
+      REDIS_MASTER_PORT_NUMBER: 6379
+      REDIS_MASTER_SET: mymaster
+      REDIS_SENTINEL_PORT_NUMBER: 26379
+      REDIS_SENTINEL_QUORUM: 2
+      REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS: 3000
+      REDIS_SENTINEL_FAILOVER_TIMEOUT: 180000
+      REDIS_SENTINEL_RESOLVE_HOSTNAMES: "yes"
+      REDIS_SENTINEL_ANNOUNCE_HOSTNAMES: "yes"
+    deploy:
+      replicas: 1
+    depends_on:
+      - redis
+      - redis-slave1
+      - redis-slave2
+      - redis-slave3
+    networks:
+      proxies:
+        aliases:
+          - redis-sentinel-3
+        ipv4_address: 172.10.12.22
+
+networks:
+  proxies:
+    name: "imi-ci-service-network"
+    external: true
