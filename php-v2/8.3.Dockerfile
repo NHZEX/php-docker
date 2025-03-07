@@ -1,4 +1,4 @@
-FROM php:8.2.27-fpm-bookworm
+FROM php:8.3.17-fpm-bookworm
 
 LABEL product=php-swoole
 

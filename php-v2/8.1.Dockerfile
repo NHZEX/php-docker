@@ -13,10 +13,27 @@ ARG INTRANET="0"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+ENV PHP_EXT_INSTALLER_VERSION=2.7.27
+ENV COMPOSER_VERSION=2.8.6
+
+ENV TINI_VERSION=v0.19.0
+
 RUN set -eux \
     && ([ "${CN}" = "0" ] || sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources)
 
-ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/download/${PHP_EXT_INSTALLER_VERSION}/install-php-extensions /usr/local/bin/install-php-extensions
+RUN chmod +x /usr/local/bin/install-php-extensions
+
+RUN install-php-extensions zip bz2 zstd
+RUN install-php-extensions igbinary
+RUN install-php-extensions sockets bcmath pdo pdo_mysql pcntl
+RUN install-php-extensions gd imagick
+RUN install-php-extensions exif imap intl
+
+RUN install-php-extensions redis-${PHPREDIS_VER}
+RUN install-php-extensions xlswriter-${XLSWRITER_VER}
+
+RUN install-php-extensions ffi
 
 # install
 RUN set -eux \
@@ -24,64 +41,16 @@ RUN set -eux \
     && apt install --no-install-recommends -y \
      ca-certificates \
      libssl-dev \
-     libzip-dev zlib1g-dev libzstd-dev \
-     libjpeg-dev libpng-dev libwebp-dev libfreetype6-dev libxpm-dev \
-     libc-client-dev libkrb5-dev \
-     libicu-dev \
-     libmagickwand-dev \
+     libzip-dev libbrotli-dev \
      libcurl4-openssl-dev \
      libc-ares-dev \
      libpq-dev \
+# imagemagick & convert
      imagemagick \
 # install php modules
     && docker-php-source extract \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install -j$(nproc) \
-     bcmath \
-     bz2 \
-     sockets \
-     exif \
-     gd \
-     imap \
-     intl \
-     pcntl \
-     zip \
-     pdo \
-     pdo_mysql \
 # compile php modules
     && cd /usr/src/php/ext \
-# install igbinary
-    && pecl install igbinary \
-    && docker-php-ext-enable igbinary \
-# install zstd
-    && pecl install zstd \
-    && docker-php-ext-enable zstd \
-# install php redie
-    && (if [ "${INTRANET}" = "0" ]; then \
-        pecl install redis-${PHPREDIS_VER} \
-        ; \
-    else \
-        wget -P /tmp ${INTRANET}/redis-${PHPREDIS_VER}.tgz  \
-        && pecl install /tmp/redis-${PHPREDIS_VER}.tgz \
-        ; \
-    fi) \
-    && docker-php-ext-enable redis \
-# install imagick
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-# install xlswriter \
-    && (if [ "${INTRANET}" = "0" ]; then \
-        pecl bundle xlswriter-${XLSWRITER_VER} \
-        ; \
-    else \
-        wget -P /tmp ${INTRANET}/xlswriter-${XLSWRITER_VER}.tgz  \
-        && pecl bundle /tmp/xlswriter-${XLSWRITER_VER}.tgz \
-        ; \
-    fi) \
-    && docker-php-ext-configure xlswriter --enable-reader \
-    && docker-php-ext-install -j$(nproc) xlswriter \
-    && docker-php-ext-enable xlswriter \
 # install php swoole
     && (if [ "${INTRANET}" = "0" ]; then \
         pecl bundle swoole-${SWOOLE_VER} \
@@ -119,6 +88,8 @@ RUN set -eux \
     && php --ri xlswriter \
     && php --ri swoole \
     && php --ri imagick \
+    && php --ri gd \
+    && php --ri imap \
     # for IM 6
     && convert -version
 
@@ -129,11 +100,11 @@ RUN set -eux \
 # php config
     && mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
-RUN curl -sfL https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
-    && chmod +x /usr/bin/composer \
+# [Composer](https://getcomposer.org/download/)
+ADD https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar /usr/bin/composer
+RUN chmod +x /usr/bin/composer \
     && composer --verbose
 
-ENV TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /sbin/tini
 RUN chmod +x /sbin/tini
 
