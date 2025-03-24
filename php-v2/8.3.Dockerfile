@@ -80,6 +80,14 @@ RUN set -eux \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux \
+    && apt update \
+    && apt install --no-install-recommends -y \
+     python3-dev \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && install-php-extensions phpy
+
+RUN set -eux \
 # check
     && php -v \
     && php -m \

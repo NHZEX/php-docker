@@ -80,6 +80,14 @@ RUN set -eux \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux \
+    && apt update \
+    && apt install --no-install-recommends -y \
+     python3-dev \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && install-php-extensions phpy
+
+RUN set -eux \
 # check
     && php -v \
     && php -m \
@@ -90,8 +98,11 @@ RUN set -eux \
     && php --ri imagick \
     && php --ri gd \
     && php --ri imap \
+    && php --ri phpy \
     # for IM 6
-    && convert -version
+    && convert -version \
+    # for python
+    && python3 -V
 
 RUN set -eux \
 # set china timezone
