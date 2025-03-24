@@ -43,7 +43,7 @@ jobs:
       - name: Push to Docker
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: php-v2
           file: ${{ matrix.image.file }}
           build-args: |
             CN=0

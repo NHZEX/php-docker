@@ -122,8 +122,8 @@ ENV UID=1000
 ENV GID=1000
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY ./etc/php.conf.d/zz-conf.ini "/usr/local/etc/php/conf.d/"
-COPY ./etc/fpm.conf.d/zz-fpm.conf "/usr/local/etc/php-fpm.d/"
+COPY etc/php.conf.d/zz-conf.ini "/usr/local/etc/php/conf.d/"
+COPY etc/fpm.conf.d/zz-fpm.conf "/usr/local/etc/php-fpm.d/"
 
 #ENTRYPOINT ["entrypoint.sh"]
 ENTRYPOINT ["/sbin/tini", "--", "entrypoint.sh"]
