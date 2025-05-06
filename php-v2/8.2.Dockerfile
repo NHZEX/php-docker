@@ -26,7 +26,7 @@ RUN chmod +x /usr/local/bin/install-php-extensions
 
 RUN install-php-extensions zip bz2 zstd
 RUN install-php-extensions igbinary
-RUN install-php-extensions sockets bcmath pdo pdo_mysql pcntl
+RUN install-php-extensions sockets bcmath pdo pdo_mysql pdo_pgsql pcntl
 RUN install-php-extensions gd imagick
 RUN install-php-extensions exif imap intl
 
