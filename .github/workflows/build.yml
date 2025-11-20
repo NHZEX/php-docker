@@ -19,30 +19,35 @@ jobs:
           - {tag: 8.3-v2-py, file: php-v2/8.3.Dockerfile}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: |
             nhzex/php
             ghcr.io/NHZEX/php
           tags: |
             type=raw,${{ matrix.image.tag }}
+          labels: |
+            org.opencontainers.image.url=unk
+            org.opencontainers.image.source=unk
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Log in to Github
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.PAT_CONTAINER }}
       - name: Push to Docker
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           context: php-v2
           file: ${{ matrix.image.file }}
           build-args: |
