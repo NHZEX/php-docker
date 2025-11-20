@@ -49,8 +49,8 @@ jobs:
       - name: Push to Docker
         uses: docker/build-push-action@v6
         with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=ghcr.io/NHZEX/buildcache-php:${{ matrix.image.tag }}
+          cache-to: type=registry,ref=ghcr.io/NHZEX/buildcache-php:${{ matrix.image.tag }},mode=max,compression=zstd
           context: php-v2
           file: ${{ matrix.image.file }}
           build-args: |
