@@ -21,9 +21,12 @@ fi
 export HOME=/home/www-app
 mkdir -p "$HOME" && chown "$USER_ID:$GROUP_ID" "$HOME"
 
+export PHP_SOCK_DIR=/var/run/php
+mkdir -p "$PHP_SOCK_DIR" && chown "$USER_ID:$GROUP_ID" "$PHP_SOCK_DIR"
+
 cat > /usr/local/etc/php-fpm.d/zz-www-over.conf << EOF
 [www]
-listen = /var/run/php/php${PHP_VER}-fpm.sock
+listen = ${PHP_SOCK_DIR}/php${PHP_VER}-fpm.sock
 EOF
 
 # first arg is `-f` or `--some-option`
