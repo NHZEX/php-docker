@@ -44,7 +44,7 @@ RUN set -eux \
      libzip-dev libbrotli-dev libzstd-dev \
      libcurl4-openssl-dev \
      libc-ares-dev \
-     libpq-dev \
+     libpq-dev libsqlite3-dev \
 # imagemagick & convert
      imagemagick \
 # install php modules
