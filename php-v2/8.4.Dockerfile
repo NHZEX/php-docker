@@ -40,11 +40,14 @@ RUN set -eux \
     && apt update \
     && apt install --no-install-recommends -y \
      ca-certificates \
-     libssl-dev \
-     libzip-dev libbrotli-dev libzstd-dev \
-     libcurl4-openssl-dev \
-     libc-ares-dev \
-     libpq-dev libsqlite3-dev \
+     libssl-dev libssl3 \
+     libzip-dev libzip4 \
+     libbrotli-dev libbrotli1 \
+     libzstd-dev libzstd1 \
+     libcurl4-openssl-dev libcurl4 \
+     libc-ares-dev libc-ares2 \
+     libpq-dev libpq5 \
+     libsqlite3-dev libsqlite3-0 \
 # imagemagick & convert
      imagemagick \
 # install php modules
@@ -76,7 +79,17 @@ RUN set -eux \
 # opcache \
     && echo "zend_extension=opcache.so" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
     && echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
-# clear up
+# clear up \
+    && apt purge -y \
+     libssl-dev \
+     libzip-dev \
+     libbrotli-dev \
+     libzstd-dev \
+     libcurl4-openssl-dev \
+     libc-ares-dev \
+     libpq-dev \
+     libsqlite3-dev \
+    && apt autoremove -y \
     && docker-php-source delete \
 #    && apt-get --purge remove -y wget \
     && apt clean \
@@ -85,13 +98,18 @@ RUN set -eux \
 RUN set -eux \
     && apt update \
     && apt install --no-install-recommends -y \
+     python3-dev python3 \
+    && install-php-extensions phpy \
+    && apt purge -y \
      python3-dev \
+    && apt autoremove -y \
     && apt clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && install-php-extensions phpy
+    && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux \
 # check
+    ldd "$(which php)" \
+    ldd "$(which php-fpm)" \
     && php -v \
     && php -m \
     && php --ri curl \
@@ -101,8 +119,11 @@ RUN set -eux \
     && php --ri imagick \
     && php --ri gd \
     && php --ri imap \
+    && php --ri phpy \
     # for IM 6
-    && convert -version
+    && convert -version \
+    # for python
+    && python3 -V
 
 RUN set -eux \
 # set china timezone
@@ -112,9 +133,13 @@ RUN set -eux \
     && mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
 # [Composer](https://getcomposer.org/download/)
+## [pubkeys](https://composer.github.io/pubkeys.html)
+ADD https://composer.github.io/snapshots.pub /root/.composer/keys.dev.pub
+ADD https://composer.github.io/releases.pub /root/.composer/keys.tags.pub
 ADD https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar /usr/bin/composer
 RUN chmod +x /usr/bin/composer \
-    && composer --verbose
+    && composer --version \
+    && composer diagnose || ([ $? -ne 2 ] || exit 1)
 
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /sbin/tini
 RUN chmod +x /sbin/tini
