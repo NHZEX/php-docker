@@ -50,7 +50,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           cache-from: type=registry,ref=ghcr.io/nhzex/php:buildcache-${{ matrix.image.tag }}
-          cache-to: type=registry,ref=ghcr.io/nhzex/php:buildcache-${{ matrix.image.tag }},mode=max,compression=zstd
+          cache-to: type=registry,ref=ghcr.io/nhzex/buildcache-php:${{ matrix.image.tag }},mode=max,compression=zstd
           context: php-v2
           file: ${{ matrix.image.file }}
           build-args: |
