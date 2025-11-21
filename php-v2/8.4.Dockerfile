@@ -41,7 +41,7 @@ RUN set -eux \
     && apt install --no-install-recommends -y \
      ca-certificates \
      libssl-dev \
-     libzip-dev libbrotli-dev \
+     libzip-dev libbrotli-dev libzstd-dev \
      libcurl4-openssl-dev \
      libc-ares-dev \
      libpq-dev \
@@ -67,8 +67,11 @@ RUN set -eux \
       --enable-sockets \
       --enable-swoole-curl \
       --enable-swoole-pgsql \
+      --enable-swoole-sqlite \
       --enable-cares \
       --enable-brotli \
+      --enable-zstd \
+      --enable-swoole-stdext \
     && docker-php-ext-install -j$(nproc) swoole \
 # opcache \
     && echo "zend_extension=opcache.so" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
